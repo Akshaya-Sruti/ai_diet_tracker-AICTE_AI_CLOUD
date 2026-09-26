@@ -234,9 +234,11 @@ html, body, [data-testid="stAppViewContainer"] {
 
 .block-container { max-width: 1120px; padding-top: 2rem; padding-bottom: 3rem; }
 
-/* Sidebar */
+/* Sidebar (tight top spacing — no empty gap above brand) */
 [data-testid="stSidebar"] { background: #FFFFFF; border-right: 1px solid var(--border); }
-[data-testid="stSidebar"] .block-container { padding-top: 1.5rem; }
+[data-testid="stSidebar"] .block-container { padding-top: 0.5rem !important; }
+div[data-testid="stSidebarUserContent"] { padding-top: 0 !important; }
+[data-testid="stSidebarHeader"] { padding-top: 0.25rem !important; }
 .brand-mark { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
 .brand-dot {
   width: 32px; height: 32px; border-radius: 10px;
@@ -352,11 +354,18 @@ ul[data-baseweb="menu"] li:hover, ul[data-baseweb="menu"] li[aria-selected="true
 ul[data-baseweb="menu"] li:hover span, ul[data-baseweb="menu"] li[aria-selected="true"] span {
   color: #17231C !important; background: transparent !important;
 }
-div.stButton > button {
+div[data-testid="stButton"] > button, div.stButton > button {
   background: var(--ink); color: #fff !important; border: none; border-radius: 12px;
   font-weight: 700; padding: 10px 18px; width: 100%;
 }
-div.stButton > button:hover { background: #24352b; color: #fff !important; }
+div[data-testid="stButton"] > button:hover, div.stButton > button:hover { background: #24352b; color: #fff !important; border: none; }
+/* Button labels render as markdown INSIDE the button — they must stay white
+   on the dark button (overrides the global dark-text rule above). */
+[data-testid="stAppViewContainer"] div[data-testid="stButton"] div[data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] div[data-testid="stButton"] div[data-testid="stMarkdownContainer"] p,
+div[data-testid="stButton"] button p, div[data-testid="stButton"] button span {
+  color: #FFFFFF !important;
+}
 div.stButton > button:disabled { background: #C9CFC9 !important; color: #fff !important; }
 div[data-testid="stDownloadButton"] > button {
   background: #fff; color: var(--ink) !important; border: 1px solid var(--border); border-radius: 12px; font-weight: 700; width: 100%;
@@ -365,10 +374,61 @@ div[data-testid="stDownloadButton"] > button:hover { border-color: var(--ink); }
 .danger-note { font-size: 12px; color: var(--muted) !important; }
 
 /* Dataframes / charts / alerts */
-div[data-testid="stDataFrame"], div[data-testid="stExpander"] { border-radius: 14px; }
-div[data-testid="stExpander"] summary p { color: var(--ink) !important; }
-div[data-testid="stAlert"] p { color: inherit !important; }
+div[data-testid="stDataFrame"] { background: #FFFFFF !important; border-radius: 14px; }
+details[data-testid="stExpander"] {
+  background: #FFFFFF !important; border: 1px solid var(--border) !important; border-radius: 14px;
+}
+details[data-testid="stExpander"] summary p,
+details[data-testid="stExpander"] summary span { color: var(--ink) !important; }
+details[data-testid="stExpander"] div[data-testid="stMarkdownContainer"] p { color: var(--ink) !important; }
+
+/* Alerts: always light card + dark text (never dark-bg mystery boxes) */
+div[data-testid="stAlert"] {
+  background: #FFFFFF !important; border: 1px solid var(--border) !important;
+  border-radius: 14px !important; color: var(--ink) !important;
+}
+div[data-testid="stAlert"] p, div[data-testid="stAlert"] span,
+div[data-testid="stAlert"] div, div[data-testid="stAlert"] li { color: var(--ink) !important; }
+div[data-testid="stAlert"] a { color: var(--green-deep) !important; }
 div[data-testid="stProgressBar"] > div > div { background-color: var(--green); }
+div[data-testid="stProgressBar"] p { color: var(--ink) !important; }
+
+/* ---- Theme lockdown: repaint every Streamlit surface light so text is
+   always dark-on-light, even if the viewer toggled Dark in Streamlit's menu ---- */
+[data-testid="stAppViewContainer"] { background: var(--bg) !important; }
+[data-testid="stSidebar"] { background: #FFFFFF !important; }
+[data-testid="stSidebarNav"] { background: #FFFFFF !important; }
+[data-testid="stHeader"], [data-testid="stToolbar"] { background: transparent !important; }
+[data-testid="stToolbar"] button, [data-testid="stHeader"] button,
+[data-testid="stToolbar"] a, [data-testid="stHeader"] a { color: var(--ink) !important; }
+[data-testid="stToolbar"] svg, [data-testid="stHeader"] svg { fill: var(--ink) !important; }
+[data-testid="stDecoration"] { background: var(--green) !important; }
+/* number-input steppers */
+div[data-testid="stNumberInput"] button {
+  background: #FFFFFF !important; color: var(--ink) !important; border-color: var(--border) !important;
+}
+div[data-testid="stNumberInput"] button svg { fill: var(--ink) !important; }
+/* selectbox arrow */
+div[data-testid="stSelectbox"] svg { fill: var(--ink) !important; color: var(--ink) !important; }
+/* checkboxes / radios (future-proof) */
+div[data-testid="stCheckbox"] label p, div[data-testid="stRadio"] label p { color: var(--ink) !important; }
+/* dataframe grid text */
+div[data-testid="stDataFrame"] *, div[data-testid="stTable"] * { color: var(--ink) !important; }
+/* chart container */
+div[data-testid="stVegaLiteChart"] { background: transparent !important; }
+/* tooltips stay dark-bg with light text */
+div[data-baseweb="tooltip"] { background: #17231C !important; }
+div[data-baseweb="tooltip"] * { color: #FFFFFF !important; background: transparent !important; }
+/* disabled buttons: dark text on grey, never white-on-white */
+div.stButton > button:disabled { background: #DDE2D8 !important; color: #5F665F !important; }
+/* Real bordered containers render as product cards */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+  border: 1px solid var(--border) !important; border-radius: 18px !important;
+  background: #FFFFFF !important; box-shadow: 0 2px 10px rgba(47,107,60,0.07);
+}
+/* captions + help text */
+div[data-testid="stCaptionContainer"], .stCaption { color: var(--muted) !important; }
+div[data-testid="stWidgetLabel"] p { color: var(--ink) !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -459,122 +519,120 @@ def _result_label(f):
 # --------- Input section ----------
 left, right = st.columns([1.6, 1], gap="medium")
 with left:
-    st.markdown('<div class="dt-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-h">Add what you ate</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-p">Search the USDA FoodData Central database, pick a match, set the weight.</div>', unsafe_allow_html=True)
-    st.write("")
-    nl_input = st.text_input(
-        "Search food",
-        value="",
-        placeholder="Try: cheddar cheese, banana, chicken breast",
-        key="usda_query",
-    )
-    if st.button("Search foods (USDA)", disabled=not USDA_API_KEY):
-        if not nl_input.strip():
-            st.warning("Type something first.")
-        else:
-            try:
-                st.session_state.usda_results = usda_search(nl_input.strip(), page_size=10)
-                if not st.session_state.usda_results:
-                    st.info("No matches in USDA. Try a simpler term (e.g. 'banana').")
-            except Exception as e:
-                st.exception(e)
-
-    if st.session_state.usda_results:
-        options = list(range(len(st.session_state.usda_results)))
-        choice = st.selectbox(
-            "Pick the closest match",
-            options,
-            format_func=lambda i: _result_label(st.session_state.usda_results[i]),
-            key="usda_choice",
+    with st.container(border=True):
+        st.markdown('<div class="section-h">Add what you ate</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-p">Search the USDA FoodData Central database, pick a match, set the weight.</div>', unsafe_allow_html=True)
+        st.write("")
+        nl_input = st.text_input(
+            "Search food",
+            value="",
+            placeholder="Try: cheddar cheese, banana, chicken breast",
+            key="usda_query",
         )
-        grams = st.number_input("Portion (grams)", value=100.0, min_value=1.0, step=10.0, key="usda_grams")
-        if st.button("Add selected food"):
-            try:
-                picked = st.session_state.usda_results[choice]
-                detail = usda_food_details(picked["fdcId"])
-                nut = extract_usda_nutrients(detail)
-                scaled = scale_nutrients(nut, grams)
-                entry = {
-                    "timestamp": datetime.now().isoformat(),
-                    "name": f"{picked.get('description', 'Food').title()} ({float(grams):.0f} g)",
-                    "calories": float(scaled["calories"] or 0),
-                    "protein_g": float(scaled["protein_g"] or 0),
-                    "carbs_g": float(scaled["carbs_g"] or 0),
-                    "fat_g": float(scaled["fat_g"] or 0),
-                }
-                st.session_state.log.append(entry)
-                st.success(f"Added: {entry['name']} — {entry['calories']:.0f} kcal (USDA)")
-                st.rerun()
-            except Exception as e:
-                st.exception(e)
-    st.markdown('</div>', unsafe_allow_html=True)
+        if st.button("Search foods (USDA)", disabled=not USDA_API_KEY):
+            if not nl_input.strip():
+                st.warning("Type something first.")
+            else:
+                try:
+                    st.session_state.usda_results = usda_search(nl_input.strip(), page_size=10)
+                    if not st.session_state.usda_results:
+                        st.info("No matches in USDA. Try a simpler term (e.g. 'banana').")
+                except Exception as e:
+                    st.exception(e)
+
+        if st.session_state.usda_results:
+            options = list(range(len(st.session_state.usda_results)))
+            choice = st.selectbox(
+                "Pick the closest match",
+                options,
+                format_func=lambda i: _result_label(st.session_state.usda_results[i]),
+                key="usda_choice",
+            )
+            grams = st.number_input("Portion (grams)", value=100.0, min_value=1.0, step=10.0, key="usda_grams")
+            if st.button("Add selected food"):
+                try:
+                    picked = st.session_state.usda_results[choice]
+                    detail = usda_food_details(picked["fdcId"])
+                    nut = extract_usda_nutrients(detail)
+                    scaled = scale_nutrients(nut, grams)
+                    entry = {
+                        "timestamp": datetime.now().isoformat(),
+                        "name": f"{picked.get('description', 'Food').title()} ({float(grams):.0f} g)",
+                        "calories": float(scaled["calories"] or 0),
+                        "protein_g": float(scaled["protein_g"] or 0),
+                        "carbs_g": float(scaled["carbs_g"] or 0),
+                        "fat_g": float(scaled["fat_g"] or 0),
+                    }
+                    st.session_state.log.append(entry)
+                    st.success(f"Added: {entry['name']} — {entry['calories']:.0f} kcal (USDA)")
+                    st.rerun()
+                except Exception as e:
+                    st.exception(e)
 
 with right:
-    st.markdown('<div class="dt-card">', unsafe_allow_html=True)
-    st.markdown('<div class="card-eyebrow">SCAN A PRODUCT</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-h" style="font-size:18px">Packaged food?</div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-p">USDA Branded foods first, OpenFoodFacts as fallback.</div>', unsafe_allow_html=True)
-    st.write("")
-    barcode = st.text_input("Enter barcode (numbers only)", value="")
-    if st.button("Lookup barcode"):
-        if not barcode.strip():
-            st.warning("Enter barcode first.")
-        else:
-            try:
-                added = False
-                if USDA_API_KEY:
-                    try:
-                        summary, detail = lookup_barcode_usda(barcode.strip())
-                    except Exception as e:
-                        st.warning(f"USDA barcode search failed ({e}); trying OpenFoodFacts…")
-                        summary, detail = None, None
-                    if summary and detail:
-                        nut = extract_usda_nutrients(detail)
-                        serving_g = nut.get("serving_g") or 100.0
-                        scaled = scale_nutrients(nut, serving_g)
-                        pname = (summary.get("description") or detail.get("description") or "Unnamed product").title()
-                        entry = {
-                            "timestamp": datetime.now().isoformat(),
-                            "name": f"{pname} ({float(serving_g):.0f} g)",
-                            "calories": float(scaled["calories"] or 0),
-                            "protein_g": float(scaled["protein_g"] or 0),
-                            "carbs_g": float(scaled["carbs_g"] or 0),
-                            "fat_g": float(scaled["fat_g"] or 0),
-                        }
-                        st.session_state.log.append(entry)
-                        st.success(f"Added: {pname} — {entry['calories']:.0f} kcal (USDA Branded)")
-                        added = True
-                        st.rerun()
-                if not added:
-                    j = lookup_barcode_off(barcode.strip())
-                    if j.get("status") == 1:
-                        prod = j["product"]
-                        pname = prod.get("product_name") or prod.get("generic_name") or "Unnamed product"
-                        nutriments = prod.get("nutriments", {})
-                        calories = nutriments.get("energy_kcal_serving") or nutriments.get("energy-kcal_serving") or nutriments.get("energy-kcal_100g") or nutriments.get("energy_kcal_100g") or nutriments.get("energy_100g")
+    with st.container(border=True):
+        st.markdown('<div class="card-eyebrow">SCAN A PRODUCT</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-h" style="font-size:18px">Packaged food?</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-p">USDA Branded foods first, OpenFoodFacts as fallback.</div>', unsafe_allow_html=True)
+        st.write("")
+        barcode = st.text_input("Enter barcode (numbers only)", value="")
+        if st.button("Lookup barcode"):
+            if not barcode.strip():
+                st.warning("Enter barcode first.")
+            else:
+                try:
+                    added = False
+                    if USDA_API_KEY:
                         try:
-                            calories = float(calories)
-                        except Exception:
-                            calories = None
-                        entry = {
-                            "timestamp": datetime.now().isoformat(),
-                            "name": pname,
-                            "calories": float(calories) if calories else 0.0,
-                            "protein_g": float(nutriments.get("proteins_100g") or 0),
-                            "carbs_g": float(nutriments.get("carbohydrates_100g") or 0),
-                            "fat_g": float(nutriments.get("fat_100g") or 0)
-                        }
-                        st.session_state.log.append(entry)
-                        st.success(f"Added: {pname} — {entry['calories']:.0f} kcal (from OpenFoodFacts)")
-                        with st.expander("Product details"):
-                            st.json(prod)
-                        st.rerun()
-                    else:
-                        st.error("Product not found in USDA or OpenFoodFacts.")
-            except Exception as e:
-                st.exception(e)
-    st.markdown('</div>', unsafe_allow_html=True)
+                            summary, detail = lookup_barcode_usda(barcode.strip())
+                        except Exception as e:
+                            st.warning(f"USDA barcode search failed ({e}); trying OpenFoodFacts…")
+                            summary, detail = None, None
+                        if summary and detail:
+                            nut = extract_usda_nutrients(detail)
+                            serving_g = nut.get("serving_g") or 100.0
+                            scaled = scale_nutrients(nut, serving_g)
+                            pname = (summary.get("description") or detail.get("description") or "Unnamed product").title()
+                            entry = {
+                                "timestamp": datetime.now().isoformat(),
+                                "name": f"{pname} ({float(serving_g):.0f} g)",
+                                "calories": float(scaled["calories"] or 0),
+                                "protein_g": float(scaled["protein_g"] or 0),
+                                "carbs_g": float(scaled["carbs_g"] or 0),
+                                "fat_g": float(scaled["fat_g"] or 0),
+                            }
+                            st.session_state.log.append(entry)
+                            st.success(f"Added: {pname} — {entry['calories']:.0f} kcal (USDA Branded)")
+                            added = True
+                            st.rerun()
+                    if not added:
+                        j = lookup_barcode_off(barcode.strip())
+                        if j.get("status") == 1:
+                            prod = j["product"]
+                            pname = prod.get("product_name") or prod.get("generic_name") or "Unnamed product"
+                            nutriments = prod.get("nutriments", {})
+                            calories = nutriments.get("energy_kcal_serving") or nutriments.get("energy-kcal_serving") or nutriments.get("energy-kcal_100g") or nutriments.get("energy_kcal_100g") or nutriments.get("energy_100g")
+                            try:
+                                calories = float(calories)
+                            except Exception:
+                                calories = None
+                            entry = {
+                                "timestamp": datetime.now().isoformat(),
+                                "name": pname,
+                                "calories": float(calories) if calories else 0.0,
+                                "protein_g": float(nutriments.get("proteins_100g") or 0),
+                                "carbs_g": float(nutriments.get("carbohydrates_100g") or 0),
+                                "fat_g": float(nutriments.get("fat_100g") or 0)
+                            }
+                            st.session_state.log.append(entry)
+                            st.success(f"Added: {pname} — {entry['calories']:.0f} kcal (from OpenFoodFacts)")
+                            with st.expander("Product details"):
+                                st.json(prod)
+                            st.rerun()
+                        else:
+                            st.error("Product not found in USDA or OpenFoodFacts.")
+                except Exception as e:
+                    st.exception(e)
 
 st.write("")
 
@@ -602,19 +660,17 @@ if st.session_state.log:
 
     c1, c2 = st.columns([1.4, 1], gap="medium")
     with c1:
-        st.markdown('<div class="dt-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-eyebrow">CALORIES BY MEAL</div>', unsafe_allow_html=True)
-        st.bar_chart(df_log.set_index("time")["calories"])
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown('<div class="card-eyebrow">CALORIES BY MEAL</div>', unsafe_allow_html=True)
+            st.bar_chart(df_log.set_index("time")["calories"])
     with c2:
-        st.markdown('<div class="dt-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-eyebrow">SUMMARY</div>', unsafe_allow_html=True)
-        st.markdown(f"<div class='section-p'><b>{total_cals:.0f} kcal</b> · Protein {total_protein:.1f} g · Carbs {total_carbs:.1f} g · Fat {total_fat:.1f} g</div>", unsafe_allow_html=True)
-        st.write("")
-        csv = df_log.to_csv(index=False)
-        st.download_button("Download CSV of log", csv, file_name="diet_log.csv", mime="text/csv")
-        st.markdown("<div class='danger-note'>Exports exactly what's in your log.</div>", unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown('<div class="card-eyebrow">SUMMARY</div>', unsafe_allow_html=True)
+            st.markdown(f"<div class='section-p'><b>{total_cals:.0f} kcal</b> · Protein {total_protein:.1f} g · Carbs {total_carbs:.1f} g · Fat {total_fat:.1f} g</div>", unsafe_allow_html=True)
+            st.write("")
+            csv = df_log.to_csv(index=False)
+            st.download_button("Download CSV of log", csv, file_name="diet_log.csv", mime="text/csv")
+            st.markdown("<div class='danger-note'>Exports exactly what's in your log.</div>", unsafe_allow_html=True)
 else:
     st.markdown("""
     <div class="dt-card"><div class="empty-wrap">
